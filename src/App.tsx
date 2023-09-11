@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import Home from "./pages/Home";
+import { Route, Routes } from "react-router-dom";
+import Products from "./pages/Products";
+import MainLayout from "./components/MainLayout";
+import { Product as IProduct } from "./types";
+import useFetch from "./hooks/useFetch";
+import { useAppDispatch } from "./redux/store";
+import { getAllProducts } from "./redux/features/productSlice";
 
 function App() {
+  const dispatch = useAppDispatch();
+  const { data } = useFetch<IProduct[]>("https://fakestoreapi.com/products", 0);
+
+  useEffect(() => {
+    if (data) {
+      dispatch(getAllProducts(data));
+    }
+  }, [data]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route index element={<Home />} />
+        <Route path="/products" element={<Products />} />
+      </Route>
+
+      <Route path="*" element={<div>404</div>} />
+    </Routes>
   );
 }
 
