@@ -5,6 +5,7 @@ import ProductItem from "../components/ProductItem";
 import { Helmet } from "react-helmet";
 
 const Products = () => {
+  //We get filtered products from the Redux store.
   const { filteredProducts } = useAppSelector((store) => store.products);
 
   return (

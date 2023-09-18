@@ -1,4 +1,3 @@
-// useFetch.js
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
@@ -7,6 +6,7 @@ function useFetch<T>(url: string, time: number) {
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  //Create a Promise to wait for a certain period of time.
   const sleep = new Promise((resolve) => setTimeout(resolve, time));
 
   useEffect(() => {

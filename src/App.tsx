@@ -7,6 +7,7 @@ import { Product as IProduct } from "./types";
 import useFetch from "./hooks/useFetch";
 import { useAppDispatch } from "./redux/store";
 import { getAllProducts } from "./redux/features/productSlice";
+import Search from "./pages/Search";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ function App() {
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/search" element={<Search />} />
       </Route>
 
       <Route path="*" element={<div>404</div>} />

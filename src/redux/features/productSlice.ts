@@ -1,9 +1,20 @@
-import { Product } from "../../../src/types";
 import { createSlice } from "@reduxjs/toolkit";
+import { Product } from "../../../src/types";
 
-const initialState = {
-  products: [] as Product[],
-  filteredProducts: [] as Product[],
+interface ProductState {
+  products: Product[];
+  filteredProducts: Product[];
+  appliedFilters: {
+    category?: string;
+    price?: { min: number; max: number };
+    rating?: number;
+  };
+}
+
+const initialState: ProductState = {
+  products: [],
+  filteredProducts: [],
+  appliedFilters: {},
 };
 
 const productsSlice = createSlice({
@@ -15,43 +26,65 @@ const productsSlice = createSlice({
       state.filteredProducts = action.payload;
     },
     filterByCategory(state, action) {
-      state.filteredProducts = state.products.filter(
-        (product) => product.category === action.payload
-      );
+      state.appliedFilters.category = action.payload;
+      applyFilters(state);
     },
     filterByPrice(state, action) {
-      state.filteredProducts = state.products.filter(
-        (product) =>
-          product.price > action.payload.min &&
-          product.price < action.payload.max
-      );
+      state.appliedFilters.price = action.payload;
+      applyFilters(state);
     },
     filterByRating(state, action) {
-      state.filteredProducts = state.products.filter(
-        (product) => product.rating.rate > action.payload
-      );
+      state.appliedFilters.rating = action.payload;
+      applyFilters(state);
     },
     filterByHighest(state) {
-      state.filteredProducts = state.filteredProducts.sort(
+      state.filteredProducts = [...state.filteredProducts].sort(
         (a, b) => b.price - a.price
       );
     },
     filterByLowest(state) {
-      state.filteredProducts = state.filteredProducts.sort(
+      state.filteredProducts = [...state.filteredProducts].sort(
         (a, b) => a.price - b.price
       );
     },
     filterByHighlyRated(state) {
-      state.filteredProducts = state.filteredProducts.sort(
+      state.filteredProducts = [...state.filteredProducts].sort(
         (a, b) => b.rating.count - a.rating.count
       );
     },
     resetFilters(state) {
       state.filteredProducts = state.products;
+      state.appliedFilters = {};
     },
     searchProduct(state, action) {},
   },
 });
+
+//Define a helper function to apply filters.
+function applyFilters(state: ProductState) {
+  const { category, price, rating } = state.appliedFilters;
+  let filteredProducts = state.products;
+
+  if (category) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.category === category
+    );
+  }
+
+  if (price) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.price > price.min && product.price < price.max
+    );
+  }
+
+  if (rating) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.rating.rate > rating
+    );
+  }
+
+  state.filteredProducts = filteredProducts;
+}
 
 export const {
   getAllProducts,
@@ -64,4 +97,5 @@ export const {
   resetFilters,
   searchProduct,
 } = productsSlice.actions;
+
 export default productsSlice.reducer;
